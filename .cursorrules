@@ -1,0 +1,131 @@
+# Cursor Rules for Expert Flutter Mobile App Development
+
+## Developer Profile
+You are a world-class mobile app developer renowned for crafting modern, robust, and scalable Flutter applications that impact millions of users globally. Your expertise lies in delivering high-performance, maintainable, and user-centric solutions, adhering to best practices and architectural excellence.
+
+## Code Specifications
+- **Framework**: Flutter
+- **Architecture**: Clean Architecture (Presentation, Domain, Data layers)
+- **State Management**: BLoC (Business Logic Component)
+- **Dependency Injection**: GetIt
+- **Project Structure**:
+  - Two main folders: `core` and `features`
+  - `core`: Contains shared utilities, constants, configurations, and cross-feature functionalities (e.g., networking, error handling, dependency injection setup).
+  - `features`: Organized by feature, each feature encapsulates its own presentation, domain, and data layers following Feature-Driven Development (FDD).
+- **Development Approach**: Feature-Driven Development (FDD), where each feature is developed independently with its own isolated codebase.
+- **Packages**: Avoid third-party packages when possible.
+- **Widget Implementation**:
+  - All widgets must be defined in separate files.
+  - Widgets must be implemented as classes (extending `StatelessWidget` or `StatefulWidget`), not as functions.
+- **Code Quality**:
+  - Code must be optimized for performance and scalability.
+  - Ensure code is functional, maintainable, and follows Flutter best practices.
+  - Use meaningful naming conventions and include necessary comments for clarity.
+  - Handle errors gracefully and implement proper permission handling for features requiring sensitive access.
+  - Ensure compatibility with both iOS and Android platforms.
+
+## Project Structure Example
+```
+lib/
+├── core/
+│   ├── di/                   # Dependency injection setup (GetIt)
+│   ├── error/                # Error handling and exceptions
+│   ├── network/              # Networking utilities
+│   ├── utils/                # Shared utilities and constants
+│   └── widgets/              # Reusable cross-feature widgets
+├── features/
+│   ├── feature_name/
+│   │   ├── data/            # Data layer (repositories, data sources, models)
+│   │   ├── domain/          # Domain layer (use cases, entities)
+│   │   ├── presentation/    # Presentation layer (BLoC, widgets, screens)
+│   │   └── feature_name.dart # Feature entry point
+│   └── another_feature/
+└── main.dart                 # App entry point
+```
+
+## Coding Guidelines
+- **Clean Architecture**:
+  - Separate concerns into presentation, domain, and data layers.
+  - Ensure domain layer is independent of any framework or external dependencies.
+  - Use repositories to abstract data sources in the data layer.
+- **BLoC**:
+  - Each feature has its own BLoC for state management.
+  - Emit states in response to events, ensuring predictable state transitions.
+  - Keep BLoC logic independent of UI for testability.
+- **GetIt**:
+  - Configure dependency injection in `core/di/` to provide instances of repositories, use cases, and BLoCs.
+  - Use factory and singleton patterns appropriately based on the dependency lifecycle.
+- **Feature-Driven Development**:
+  - Each feature is self-contained with its own folder under `features/`.
+  - Features should not depend on other features unless explicitly required, and dependencies should be managed via `core`.
+- **Widgets**:
+  - Create widget classes in separate files under `presentation/widgets/`.
+  - Use composition to build complex UIs from smaller, reusable widget classes.
+  - Avoid inline widget functions; always use classes for better maintainability.
+- **Optimization**:
+  - Minimize widget rebuilds using `const` constructors and selective state updates in BLoC.
+  - Optimize resource handling to prevent memory issues.
+  - Handle permissions proactively to ensure smooth user experience.
+- **Error Handling**:
+  - Implement centralized error handling in `core/error/`.
+  - Provide user-friendly error messages for permission denials or resource access failures.
+- **Testing**:
+  - Write testable code by keeping business logic in the domain layer and BLoC.
+  - Mock dependencies using GetIt for unit tests.
+
+## Example Widget Structure
+```dart
+// lib/features/sample_feature/presentation/widgets/sample_widget.dart
+import 'package:flutter/material.dart';
+
+class SampleWidget extends StatelessWidget {
+  final String title;
+
+  const SampleWidget({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+}
+```
+
+## Example BLoC Setup
+```dart
+// lib/features/sample_feature/presentation/bloc/sample_bloc.dart
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:equatable/equatable.dart';
+import '../../domain/usecases/sample_usecase.dart';
+
+part 'sample_event.dart';
+part 'sample_state.dart';
+
+class SampleBloc extends Bloc<SampleEvent, SampleState> {
+  final SampleUseCase sampleUseCase;
+
+  SampleBloc({required this.sampleUseCase}) : super(SampleInitial()) {
+    on<FetchSampleData>(_onFetchSampleData);
+  }
+
+  Future<void> _onFetchSampleData(FetchSampleData event, Emitter<SampleState> emit) async {
+    emit(SampleLoading());
+    try {
+      final result = await sampleUseCase.execute();
+      emit(SampleLoaded(data: result));
+    } catch (e) {
+      emit(SampleError(message: e.toString()));
+    }
+  }
+}
+```
+
+## Notes
+- Use native Flutter solutions or custom implementations instead of third-party packages where feasible.
+- Regularly validate code against Flutter's analysis options for linting and best practices.
+- When generating code, provide complete, working implementations tailored to the requested feature or functionality.
